@@ -1,11 +1,13 @@
-write("hello world")
-write("hello world")
-write("hello world")
-write("hello world")
-write("hello world")
-write("hello world")
-write("hello world")
-write("hello world")
-new var("x") = y
-new var(input("Ur mom")) = zsss
-write(var(y))
+<print>"Hello World"</print>
+
+
+<input>"Hello"</input>
+
+
+<var>x = <input>"Hello"</input></var>
+
+<print></print>
+
+
+
+<if>(x == 2)print()</if>

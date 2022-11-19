@@ -1,11 +1,5 @@
-print("hello world")
-print("hello world")
-print("hello world")
-print("hello world")
-print("hello world")
-print("hello world")
-print("hello world")
-print("hello world")
-y = "x"
-zsss = input("Ur mom")
+print("Hello World")
+x = input("Hello")
 print()
+if x == 2:
+    print()

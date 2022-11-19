@@ -11,38 +11,78 @@ def main(path):
     for line in range(len(lines)):
         lines[line] = lines[line].strip()
 
-    for line in lines:  # Iterate over all lines in file
+
+    for line in lines:
+
+        """
         
-        if line[0:6] == "write(":       # write should always be on its own line
-            searchstart = 6
-            offset = 0
-            print(line[searchstart:])
-            if "var(" in line[searchstart:]:
-                endbracket = line[searchstart:].index(")")
-                searchstart = endbracket + searchstart
-                offset = 1
-
-
-            endbracket = line[searchstart:].index(")")
-            output.append(f"print({line[6:endbracket + 6]})\n")# pad with 6 chars because starting at 6 chars
+        Essentially this code will find opening tags and closing tags and use whatever is within
+        those tags as the code
         
+        """
+        if "<print>" in line:
+            if "</print>" in line:
+                outputstr = line[7: line.index("</print>")]
+            else:
+                outputstr = ""
+                out = lines[lines.index(line): lines.index("</print>")]
+                for i in range(len(out)):
+                    if i == 0:
+                        outputstr += out[i][7:]
+                    else:
+                        outputstr += out[i]
+            output.append(f"print({outputstr})\n")
+
+        """if "<input>" in line:
+            if "</input>" in line:
+                outputstr = line[7: line.index("</input>")]
+            else:
+                outputstr = ""
+                out = lines[lines.index(line): lines.index("</input>")]
+                for i in range(len(out)):
+                    if i == 0:
+                        outputstr += out[i][7:]
+                    else:
+                        outputstr += out[i]
+            output.append(f"input({outputstr})\n")"""
         
-        if line[0:3] == "new":
-            searchstart = 4
-            if line[searchstart:8] == "var(":
-                searchstart = 8
-                offset = 0
+        if "<var>" in line:
+            if "<input>" in line:
+                outputstr = line[5: line.index("</input>")]
+                outputstr += ")"
+                outputstr = outputstr.replace("<input>", "input(")
+            elif "</var>" in line:
+                outputstr = line[5: line.index("</var>")]
+            else:
+                outputstr = ""
+                out = lines[lines.index(line): lines.index("</var>")]
+                for i in range(len(out)):
+                    if i == 0:
+                        outputstr += out[i][5:]
+                    else:
+                        outputstr += out[i]
+            output.append(f"{outputstr}\n")
 
-                if "input(" in line[searchstart:]:
-                    endbracket = line[searchstart:].index(")")
-                    searchstart = endbracket + searchstart
-                    offset = 1
+        if "<if>" in line:
+            if "</if>" in line:     # Handle when if statement is on one line
+                firstbracket = 5
+                secondbracket = line[firstbracket:].index(")") + firstbracket
+                conditionstr = line[firstbracket: secondbracket]
+                output.append(f"if {conditionstr}:\n")
+                iftext = line[secondbracket + 1:]
+                iftext = iftext.replace("</if>", "")
+                output.append(f"    {iftext}")
+            else:
+                outputstr = ""
+                out = lines[lines.index(line): lines.index("</if>")]
+                for i in range(len(out)):
+                    if i == 0:
+                        outputstr += out[i][5:-1]
+                    else:
+                        outputstr += out[i]
+                output.append(f"if {outputstr}:\n")
 
-                endbracket = line[searchstart:].index(")")
-                value = line[8:endbracket + searchstart + offset]
 
-                name = line[endbracket + searchstart + 4 + offset: ]
-                output.append(f"{name} = {value}\n")
 
     with open(f"{path[:-4]}.py", "w+") as f:        # Output to the name of file.py
         f.writelines(output)
