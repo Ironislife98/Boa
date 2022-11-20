@@ -10,7 +10,7 @@ def main(path):
     # Remove beginning spaces and ending spaces to allow handling
     for line in range(len(lines)):
         lines[line] = lines[line].strip()
-
+    #Blank comment
 
     for line in lines:
 
