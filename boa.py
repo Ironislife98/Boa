@@ -64,23 +64,29 @@ class Lexer:
 
 
         while self.current_char != None:
-            print(self.current_char)
             if self.current_char in " \t":
                 self.advance()
             elif self.current_char in DIGITS:
                 token.append(self.make_number())
+                self.advance()
             elif self.current_char == "+":
                 token.append(Token(TT_PLUS))
+                self.advance()
             elif self.current_char == "-":
                 token.append(Token(TT_MINUS))
+                self.advance()
             elif self.current_char == "*":
                 token.append(Token(TT_MUL))
+                self.advance()
             elif self.current_char == "/":
                 token.append(Token(TT_DIV))
+                self.advance()
             elif self.current_char == "(":
                 token.append(Token(TT_LPAREN))
+                self.advance()
             elif self.current_char == ")":
                 token.append(Token(TT_RPAREN))
+                self.advance()
             else:
                 # Return an error
                 char = self.current_char
