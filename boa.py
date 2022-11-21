@@ -1,3 +1,5 @@
+import termcolor
+
 
 # CONSTANTS
 DIGITS = "0123456789"
@@ -13,8 +15,10 @@ class Error:
         self.details = details
 
     def string(self):
-        result = f"{self.error_name}: {self.details}"
-        result += f"\nFile {self.pos_start.fn}, line {self.pos_start.ln + 1}"
+        result = termcolor.colored(f"{self.error_name}: {self.details}", "red", attrs=["bold"])
+        #result = f"{self.error_name}: {self.details}"
+        result += termcolor.colored(f"\nFile {self.pos_start.fn}, line {self.pos_start.ln + 1}", "red", attrs=["bold"])
+        #result += f"\nFile {self.pos_start.fn}, line {self.pos_start.ln + 1}"
         return result
 
 class IllegalCharError(Error):
