@@ -63,7 +63,7 @@ TOKENIZATION
 """
 
 # Token definitons
-TT_INT = "TT_INT"
+TT_INT = "INT"
 TT_FLOAT = "FLOAT"
 TT_PLUS = "PLUS"
 TT_MINUS = "MINUS"
@@ -184,6 +184,13 @@ class BinOpNode:
     def __repr__(self):
         return f"({self.left_node}, {self.op_tok}, {self.right_node})"
 
+class UnaryOpNode:
+    def __init__(self, op_tok):
+        pass
+
+
+
+
 # Parse Result
 # Instead of returning a node we return a parse result
 # Check for errors
@@ -197,7 +204,7 @@ class ParseResult:
         if isinstance(res, ParseResult):        # Check if result is a parse result
             if res.error:       # Check if result has error
                 self.error = res.error
-                return res.node
+            return res.node
         return res
 
     def success(self, node):
@@ -218,10 +225,14 @@ class Parser:
         self.advance()
 
     def parse(self):
-        res = self.expression()
+        res = self.expr()
         if not res.error and self.current_tok.type != TT_EOF:
-            res.failure(InvalidSyntaxError(self.current_tok.pos_start, self.current_tok.pos_end, "Expected '+', '-', '*', or '/'"))
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected '+', '-', '*' or '/'"
+            ))
         return res
+
 
     def advance(self):
         self.tok_idx += 1
@@ -236,12 +247,33 @@ class Parser:
         if tok.type in (TT_INT, TT_FLOAT):
             res.register(self.advance())
             return res.success(NumberNode(tok))
+            
+        elif tok.type in (TT_INT, TT_FLOAT):
+            res.register(self.advance())
+            return res.success(NumberNode(tok))
+
+        elif tok.type == TT_LPAREN:
+            res.register(self.advance())
+            expr = res.register(self.expr())
+            if res.error: return res
+            if self.current_tok.type == TT_RPAREN:
+                res.register(self.advance())
+                return res.success(expr)
+            else:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+					"Expected ')'"
+				))
+
         # Else
         return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))
 
     def term(self):
-        return self.bin_op(self.factor, (TT_DIV, TT_MUL))
+        return self.bin_op(self.factor, (TT_MUL, TT_DIV))
     
+    def expr(self):
+        return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
+
     # Needs to be shared with self.term and self.expression
     def bin_op(self, func, ops):
         res = ParseResult()
@@ -249,8 +281,6 @@ class Parser:
     
         if res.error:
             return res
-
-
 
         while self.current_tok.type in ops:
             op_tok = self.current_tok
@@ -262,9 +292,7 @@ class Parser:
         
         return res.success(left)
 
-    def expression(self):
-        return self.bin_op(self.term, (TT_PLUS, TT_MINUS))
-
+    
 
 
 # RUN
@@ -274,12 +302,11 @@ def run(fn, text):
     tokens, error = lexer.make_tokens()
     
     if error:   # Detect error before generating tree
-        return None, Error
+        return None, error
 
     # Generate AST (Abstract Syntax Tree)
     parser = Parser(tokens)
     ast = parser.parse()
-
     return ast.node, ast.error
 
 

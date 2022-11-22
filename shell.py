@@ -2,10 +2,9 @@ import boa
 
 while True:
     text = input("boa >> ")
-    result, error = boa.run("<stdin>", text)
+    result, error1 =  boa.run("<stdin>", text)
 
-    if error:
-
-        print(error.string())
+    if error1:
+        print(error1.string())
     else:
-        print(str(result))
+        print(result)
