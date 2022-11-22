@@ -185,8 +185,12 @@ class BinOpNode:
         return f"({self.left_node}, {self.op_tok}, {self.right_node})"
 
 class UnaryOpNode:
-    def __init__(self, op_tok):
-        pass
+    def __init__(self, op_tok, node):
+        self.op_tok = op_tok
+        self.node = node
+
+    def __repr__(self):
+        return f"({self.op_tok}, {self.node})"
 
 
 
@@ -244,10 +248,13 @@ class Parser:
         res = ParseResult()
         tok = self.current_tok
 
-        if tok.type in (TT_INT, TT_FLOAT):
+        if tok.type in (TT_PLUS, TT_MINUS):
             res.register(self.advance())
-            return res.success(NumberNode(tok))
-            
+            factor = res.register(self.factor())
+            if res.error: 
+                return res
+            return res.success(UnaryOpNode(tok, factor))
+
         elif tok.type in (TT_INT, TT_FLOAT):
             res.register(self.advance())
             return res.success(NumberNode(tok))
@@ -261,9 +268,10 @@ class Parser:
                 return res.success(expr)
             else:
                 return res.failure(InvalidSyntaxError(
-                    self.current_tok.pos_start, self.current_tok.pos_end,
+					self.current_tok.pos_start, self.current_tok.pos_end,
 					"Expected ')'"
 				))
+
 
         # Else
         return res.failure(InvalidSyntaxError(tok.pos_start, tok.pos_end, "Expected int or float"))

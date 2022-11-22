@@ -1,10 +1,10 @@
-import boa
+import test
 
 while True:
     text = input("boa >> ")
-    result, error1 =  boa.run("<stdin>", text)
+    result, error =  test.run("<stdin>", text)
 
-    if error1:
-        print(error1.string())
+    if error:
+        print(error.as_string())
     else:
         print(result)
