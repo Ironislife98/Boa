@@ -5,6 +5,7 @@ while True:
     result, error = boa.run("<stdin>", text)
 
     if error:
+
         print(error.string())
     else:
-        print(result)
+        print(str(result))
