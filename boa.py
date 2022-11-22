@@ -26,8 +26,6 @@ class IllegalCharError(Error):
         super().__init__(pos_start, pos_end, "Illegal Character", details) # No clue what this does
 
 
-# Positon detection
-
 class Position:
                 # Index, line, column, filename, filetext
     def __init__(self, idx: int, ln: int, col: int, fn, ftx):
@@ -57,7 +55,7 @@ class Position:
 TOKENIZATION
 """
 
-# Token constants
+# Token definitons
 TT_INT = "TT_INT"
 TT_FLOAT = "FLOAT"
 TT_PLUS = "PLUS"
